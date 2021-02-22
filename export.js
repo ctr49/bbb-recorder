@@ -9,10 +9,10 @@ const spawn = require('child_process').spawn;
 
 var xvfb        = new Xvfb({
     silent: true,
-    xvfb_args: ["-screen", "0", "1280x800x24", "-ac", "-nolisten", "tcp", "-dpi", "96", "+extension", "RANDR"]
+    xvfb_args: ["-screen", "0", "1920x1080x24", "-ac", "-nolisten", "tcp", "-dpi", "96", "+extension", "RANDR"]
 });
-var width       = 1280;
-var height      = 720;
+var width       = 1920;
+var height      = 1080;
 var options     = {
   headless: false,
   args: [
@@ -32,7 +32,7 @@ var options     = {
 }
 
 if(platform == "linux"){
-    options.executablePath = "/usr/bin/google-chrome"
+    options.executablePath = "/usr/bin/chromium-browser"
 }else if(platform == "darwin"){
     options.executablePath = "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 }
@@ -118,6 +118,11 @@ async function main() {
         }
 
         await page.waitForSelector('button[class=acorn-play-button]');
+        await page.click('button[class=acorn-swap-button]', {waitUntil: 'domcontentloaded'});
+        await page.evaluate(() => {
+            let dom = document.querySelector('#chat-area');
+            dom.parentNode.removeChild(dom);
+        });
         await page.$eval('#navbar', element => element.style.display = "none");
         await page.$eval('#copyright', element => element.style.display = "none");
         await page.$eval('.acorn-controls', element => element.style.opacity = "0");
